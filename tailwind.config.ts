@@ -87,7 +87,12 @@ const config: Config = {
   				to: {
   					height: '0'
   				}
-  			}
+  			},
+  			shimmer: {
+  				'100%': {
+  					transform: 'translateX(100%)',
+  				},
+  			},
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
@@ -101,4 +106,3 @@ const config: Config = {
   
 };
 export default config;
-

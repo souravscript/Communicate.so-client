@@ -1,12 +1,12 @@
 import ProtectedRoute from "@/lib/routeGuard";
 
 const MainLayout=({children}: Readonly<{
-    children: React.ReactNode;
+  children: React.ReactNode;
   }>)=>{
-    return (
-        <ProtectedRoute>
+  return (
+          <ProtectedRoute>
             {children}
-        </ProtectedRoute>
-    )
+          </ProtectedRoute>
+  )
 }
 export default MainLayout;

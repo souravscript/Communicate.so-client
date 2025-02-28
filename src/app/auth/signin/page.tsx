@@ -51,7 +51,7 @@ export default function Auth(){
 
     try {
       setIsSubmitting(true);
-      const response = await fetch("http://localhost:8082/api/auth/signin", {
+      const response = await fetch("http://localhost:8082/api/v1//auth/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -135,6 +135,7 @@ export default function Auth(){
              </Link>
               <Button 
                 onClick={handleLogin} 
+                className='w-full'
                 type="submit"
                 disabled={isSubmitting}
               >

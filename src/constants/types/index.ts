@@ -13,7 +13,7 @@ export interface Stat {
     id: string ;
     name: string;
     category: string;
-    joinedOn: string;
+    createdAt: string;
     lastLogin: string;
   }
   

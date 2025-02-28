@@ -28,7 +28,7 @@ interface Activity {
 }
 
 const dataSourceMapping = {
-  'google-drive': { 
+  'google_drive': { 
     name: 'Google Drive', 
     icon: <Image src={drive} alt="drive" className="h-24 w-24" />,
     lastSynced: new Date(), 
@@ -73,17 +73,16 @@ const dataSourceMapping = {
 };
 
 const Activities = () => {
-  const enabledSources = useSelector((state: RootState) => state.dataSources.enabledSources);
+  const { dataSources } = useSelector((state: RootState) => state.dataSources);
   
   // Get enabled data sources
-  const enabledSourceIds = Object.entries(enabledSources)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    .filter(([_, isEnabled]) => isEnabled)
-    .map(([id]) => id);
+  const enabledSourceIds = dataSources
+    .filter(source => source.isEnabled && source.type)
+    .map(source => source.type.toLowerCase().replace('-', '_'));
 
-  const [activeTab, setActiveTab] = useState<string>(enabledSourceIds[0] || 'google-drive');
+  const [activeTab, setActiveTab] = useState<string>(enabledSourceIds[0] || 'google_drive');
   const [selectedActivity, setSelectedActivity] = useState<Activity>(
-    dataSourceMapping[enabledSourceIds[0] as keyof typeof dataSourceMapping] || dataSourceMapping['google-drive']
+    dataSourceMapping[enabledSourceIds[0] as keyof typeof dataSourceMapping] || dataSourceMapping['google_drive']
   );
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
@@ -133,6 +132,11 @@ const Activities = () => {
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     setSelectedActivity(dataSourceMapping[value as keyof typeof dataSourceMapping]);
+  };
+
+  const getDataSourceName = (sourceId: string) => {
+    const mappingKey = sourceId.toLowerCase().replace('-', '_');
+    return dataSourceMapping[mappingKey as keyof typeof dataSourceMapping]?.name || sourceId;
   };
 
   const renderContent = (activity: Activity) => (
@@ -260,7 +264,7 @@ const Activities = () => {
                     style={{ boxShadow: 'none' }} 
                     value={sourceId}
                   >
-                    {dataSourceMapping[sourceId as keyof typeof dataSourceMapping].name}
+                    {getDataSourceName(sourceId)}
                   </TabsTrigger>
                 ))}
             </TabsList>

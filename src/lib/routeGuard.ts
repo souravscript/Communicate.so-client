@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useEffect, ReactNode } from "react";
 import Cookies from "js-cookie";
-import { redirect } from "next/navigation";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -18,6 +17,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     if (!user) {
       router.push("/auth/signin");
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   return user ? children : null;
