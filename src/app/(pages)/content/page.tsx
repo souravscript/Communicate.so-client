@@ -37,13 +37,69 @@ const dummyStats: Stat[] = [
   
 
   const mockFiles: FileData[] = [
-    { fileName: "Financial Report 2024.docx", fileSizeKB: 120 },
-    { fileName: "Bank Reports.pdf", fileSizeKB: 450 },
-    { fileName: "Sales Report FY24.pdf", fileSizeKB: 300 },
-    { fileName: "Earning Report FY24-25.pdf", fileSizeKB: 250 },
-    { fileName: "Earning Report FY24-25.pdf", fileSizeKB: 250 },
-    { fileName: "Earning Report FY24-25.pdf", fileSizeKB: 250 },
-    { fileName: "Earning Report FY24-25.pdf", fileSizeKB: 250 },
+    { 
+      id: "1",
+      name: "Financial Report 2024.docx",
+      type: "docx",
+      size: "120 KB",
+      lastSync: new Date().toISOString(),
+      dataSource: "Local Drive",
+      status: "synced"
+    },
+    { 
+      id: "2",
+      name: "Bank Reports.pdf",
+      type: "pdf",
+      size: "450 KB",
+      lastSync: new Date().toISOString(),
+      dataSource: "Google Drive",
+      status: "synced"
+    },
+    { 
+      id: "3",
+      name: "Sales Report FY24.pdf",
+      type: "pdf",
+      size: "300 KB",
+      lastSync: new Date().toISOString(),
+      dataSource: "Dropbox",
+      status: "syncing"
+    },
+    { 
+      id: "4",
+      name: "Earning Report FY24-25.pdf",
+      type: "pdf",
+      size: "250 KB",
+      lastSync: new Date().toISOString(),
+      dataSource: "OneDrive",
+      status: "synced"
+    },
+    { 
+      id: "5",
+      name: "Market Analysis Q1 2024.pdf",
+      type: "pdf",
+      size: "250 KB",
+      lastSync: new Date().toISOString(),
+      dataSource: "SharePoint",
+      status: "failed"
+    },
+    { 
+      id: "6",
+      name: "Budget Forecast 2024.xlsx",
+      type: "xlsx",
+      size: "250 KB",
+      lastSync: new Date().toISOString(),
+      dataSource: "Local Drive",
+      status: "synced"
+    },
+    { 
+      id: "7",
+      name: "Project Timeline.pptx",
+      type: "pptx",
+      size: "250 KB",
+      lastSync: new Date().toISOString(),
+      dataSource: "Google Drive",
+      status: "synced"
+    }
   ];
 
   
@@ -61,4 +117,3 @@ const dummyStats: Stat[] = [
       </div>
     );
   }
-  

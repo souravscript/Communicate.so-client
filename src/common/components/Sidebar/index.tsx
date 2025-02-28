@@ -4,12 +4,12 @@ import { LayoutDashboard, User, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-import SideBarDataIcon from "@/common/svgComponents/SideBarDataIcon";
+import SideBarDataIcon from "@/common/utilComponents/SideBarDataIcon";
 
 const Sidebar = ({ isOpen }: { isOpen: boolean }) => {
   const router = useRouter();
   const navItems = [
-    { icon: <LayoutDashboard />, label: "Dashboard", path: "/" },
+    { icon: <LayoutDashboard  />, label: "Dashboard", path: "/" },
     { icon: <SideBarDataIcon className="h-6 w-6 text-white" />, label: "Data Sources", path: "/data-sources" },
     { icon: <SideBarDataIcon className="h-6 w-6 text-white" />, label: "Content", path: "/content" },
     { icon: <User />, label: "Members", path: "/members" },
@@ -50,8 +50,8 @@ const Sidebar = ({ isOpen }: { isOpen: boolean }) => {
               pathName === item.path ? "text-primaryColor" : "hover:bg-gray-700"
             }`}
           >
-            <span className={`${pathName === item.path ? "text-primaryColor" : ""}`}>{item.icon}</span>
-            <span className={`ml-6 text-[14px] leading-[20px] tracking-normal ${pathName === item.path ? "text-primaryColor" : ""}`}>
+            <span className={`${pathName === item.path ? "text-[#0F4ECC]" : ""}`}>{item.icon}</span>
+            <span className={`ml-6 text-[14px] leading-[20px] tracking-normal ${pathName === item.path ? "text-[#0F4ECC]" : ""}`}>
               {item.label}
             </span>
           </Link>

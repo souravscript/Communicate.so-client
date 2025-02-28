@@ -8,22 +8,45 @@ import database from '@/../public/database.png'
 import { ExternalLink, FileText, Link as LinkIcon } from 'lucide-react'
 
 import { useDispatch, useSelector } from 'react-redux'
+import { enableDataSource, fetchDataSources } from '@/redux/actions/dataSourcesAction'
 import { RootState } from '@/redux/store'
-import { toggleDataSource } from '@/redux/slices/dataSourcesSlice'
 
 import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/ui/button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Input } from "@/components/ui/input"
 import Image from "next/image"
+import { useEffect } from 'react'
+import DataSourceShimmer from '@/common/utilComponents/shimmer/DataSourceShimmer'
 
 export default function IntegrationSettings() {
   const dispatch = useDispatch();
-  const enabledSources = useSelector((state: RootState) => state.dataSources.enabledSources);
+  const { dataSources, loading } = useSelector((state: RootState) => state.dataSources);
 
-  const handleToggle = (sourceId: string) => {
-    dispatch(toggleDataSource(sourceId));
+  useEffect(() => {
+    fetchDataSources(dispatch);
+  }, [dispatch]);
+
+  const handleToggle = async (id: string) => {
+    try {
+      await enableDataSource(id, dispatch);
+    } catch (error) {
+      console.error('Failed to toggle data source:', error);
+    }
   };
+
+  const getDataSourceStatus = (type: string) => {
+    const dataSource = dataSources.find(ds => ds.type === type);
+    return dataSource?.isEnabled || false;
+  };
+
+  const getDataSourceId = (type: string) => {
+    const dataSource = dataSources.find(ds => ds.type === type);
+    return dataSource?.id;
+  };
+
+  if (loading) {
+    return <DataSourceShimmer />;
+  }
 
   return (
     <div className="w-full max-w-3xl mx-auto p-4 space-y-4 relative left-[10rem]">
@@ -39,8 +62,8 @@ export default function IntegrationSettings() {
                 className="rounded"
               />
               <span className="flex-1 text-left">Google Drive</span>
-              <span className={`text-sm font-medium mr-4 ${enabledSources['google-drive'] ? 'text-green-600' : 'text-gray-500'}`}>
-                {enabledSources['google-drive'] ? 'Enabled' : 'Disabled'}
+              <span className={`text-sm font-medium mr-4 ${getDataSourceStatus('google-drive') ? 'text-green-600' : 'text-gray-500'}`}>
+                {getDataSourceStatus('google-drive') ? 'Enabled' : 'Disabled'}
               </span>
             </div>
           </AccordionTrigger>
@@ -48,10 +71,20 @@ export default function IntegrationSettings() {
             <div className="flex items-center space-x-2">
               <Switch 
                 id="google-drive-enable" 
-                checked={enabledSources['google-drive']}
-                onCheckedChange={() => handleToggle('google-drive')}
+                checked={getDataSourceStatus('google-drive')}
+                onCheckedChange={() => {
+                  const id = getDataSourceId('google-drive');
+                  if (id) handleToggle(id);
+                }}
               />
-              <label htmlFor="google-drive-enable">Enable</label>
+              <label htmlFor="google-drive-enable">Enable Google Drive Integration</label>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm text-gray-500">Connect your Google Drive account to access and search through your documents.</p>
+              <Button variant="outline" className="w-full">
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Connect Google Drive
+              </Button>
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -67,8 +100,8 @@ export default function IntegrationSettings() {
                 className="rounded"
               />
               <span className="flex-1 text-left">Slack</span>
-              <span className={`text-sm font-medium mr-4 ${enabledSources['slack'] ? 'text-green-600' : 'text-gray-500'}`}>
-                {enabledSources['slack'] ? 'Enabled' : 'Disabled'}
+              <span className={`text-sm font-medium mr-4 ${getDataSourceStatus('slack') ? 'text-green-600' : 'text-gray-500'}`}>
+                {getDataSourceStatus('slack') ? 'Enabled' : 'Disabled'}
               </span>
             </div>
           </AccordionTrigger>
@@ -76,42 +109,20 @@ export default function IntegrationSettings() {
             <div className="flex items-center space-x-2">
               <Switch 
                 id="slack-enable" 
-                checked={enabledSources['slack']}
-                onCheckedChange={() => handleToggle('slack')}
+                checked={getDataSourceStatus('slack')}
+                onCheckedChange={() => {
+                  const id = getDataSourceId('slack');
+                  if (id) handleToggle(id);
+                }}
               />
-              <label htmlFor="slack-enable">Enable</label>
+              <label htmlFor="slack-enable">Enable Slack Integration</label>
             </div>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="client-id" className="text-sm text-gray-600">
-                  Client ID
-                </label>
-                <Input id="client-id" placeholder="Enter your client ID" />
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="client-secret" className="text-sm text-gray-600">
-                  Client Secret
-                </label>
-                <Input id="client-secret" type="password" placeholder="Enter your client secret" />
-              </div>
-              <div className="space-y-2">
-                <label htmlFor="callback-url" className="text-sm text-gray-600">
-                  Callback URL (for OAuth)
-                </label>
-                <Input id="callback-url" defaultValue="https://ravenbank.communicate.so/auth/v1/callback" readOnly />
-              </div>
-            </div>
-            <div className="flex items-center justify-between pt-4">
-              <Button variant="link" className="text-blue-600 p-0 h-auto" asChild>
-                <a href="#" className="flex items-center gap-2">
-                  Documentation
-                  <ExternalLink className="h-4 w-4" />
-                </a>
+            <div className="space-y-2">
+              <p className="text-sm text-gray-500">Connect your Slack workspace to search through channels and messages.</p>
+              <Button variant="outline" className="w-full">
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Connect Slack
               </Button>
-              <div className="space-x-3">
-                <Button variant="outline">Cancel</Button>
-                <Button>Connect</Button>
-              </div>
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -127,8 +138,8 @@ export default function IntegrationSettings() {
                 className="rounded"
               />
               <span className="flex-1 text-left">Tally</span>
-              <span className={`text-sm font-medium mr-4 ${enabledSources['tally'] ? 'text-green-600' : 'text-gray-500'}`}>
-                {enabledSources['tally'] ? 'Enabled' : 'Disabled'}
+              <span className={`text-sm font-medium mr-4 ${getDataSourceStatus('tally') ? 'text-green-600' : 'text-gray-500'}`}>
+                {getDataSourceStatus('tally') ? 'Enabled' : 'Disabled'}
               </span>
             </div>
           </AccordionTrigger>
@@ -136,10 +147,20 @@ export default function IntegrationSettings() {
             <div className="flex items-center space-x-2">
               <Switch 
                 id="tally-enable" 
-                checked={enabledSources['tally']}
-                onCheckedChange={() => handleToggle('tally')}
+                checked={getDataSourceStatus('tally')}
+                onCheckedChange={() => {
+                  const id = getDataSourceId('tally');
+                  if (id) handleToggle(id);
+                }}
               />
-              <label htmlFor="tally-enable">Enable</label>
+              <label htmlFor="tally-enable">Enable Tally Integration</label>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm text-gray-500">Connect your Tally account to access and search through your data.</p>
+              <Button variant="outline" className="w-full">
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Connect Tally
+              </Button>
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -155,8 +176,8 @@ export default function IntegrationSettings() {
                 className="rounded"
               />
               <span className="flex-1 text-left">Salesforce</span>
-              <span className={`text-sm font-medium mr-4 ${enabledSources['salesforce'] ? 'text-green-600' : 'text-gray-500'}`}>
-                {enabledSources['salesforce'] ? 'Enabled' : 'Disabled'}
+              <span className={`text-sm font-medium mr-4 ${getDataSourceStatus('salesforce') ? 'text-green-600' : 'text-gray-500'}`}>
+                {getDataSourceStatus('salesforce') ? 'Enabled' : 'Disabled'}
               </span>
             </div>
           </AccordionTrigger>
@@ -164,10 +185,20 @@ export default function IntegrationSettings() {
             <div className="flex items-center space-x-2">
               <Switch 
                 id="salesforce-enable" 
-                checked={enabledSources['salesforce']}
-                onCheckedChange={() => handleToggle('salesforce')}
+                checked={getDataSourceStatus('salesforce')}
+                onCheckedChange={() => {
+                  const id = getDataSourceId('salesforce');
+                  if (id) handleToggle(id);
+                }}
               />
-              <label htmlFor="salesforce-enable">Enable</label>
+              <label htmlFor="salesforce-enable">Enable Salesforce Integration</label>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm text-gray-500">Connect your Salesforce account to access and search through your data.</p>
+              <Button variant="outline" className="w-full">
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Connect Salesforce
+              </Button>
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -179,8 +210,8 @@ export default function IntegrationSettings() {
                 <FileText className="w-5 h-5 text-red-500" />
               </div>
               <span className="flex-1 text-left">PDF Documents</span>
-              <span className={`text-sm font-medium mr-4 ${enabledSources['pdf'] ? 'text-green-600' : 'text-gray-500'}`}>
-                {enabledSources['pdf'] ? 'Enabled' : 'Disabled'}
+              <span className={`text-sm font-medium mr-4 ${getDataSourceStatus('pdf') ? 'text-green-600' : 'text-gray-500'}`}>
+                {getDataSourceStatus('pdf') ? 'Enabled' : 'Disabled'}
               </span>
             </div>
           </AccordionTrigger>
@@ -188,10 +219,20 @@ export default function IntegrationSettings() {
             <div className="flex items-center space-x-2">
               <Switch 
                 id="pdf-enable" 
-                checked={enabledSources['pdf']}
-                onCheckedChange={() => handleToggle('pdf')}
+                checked={getDataSourceStatus('pdf')}
+                onCheckedChange={() => {
+                  const id = getDataSourceId('pdf');
+                  if (id) handleToggle(id);
+                }}
               />
-              <label htmlFor="pdf-enable">Enable</label>
+              <label htmlFor="pdf-enable">Enable PDF Integration</label>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm text-gray-500">Connect your PDF documents to access and search through your data.</p>
+              <Button variant="outline" className="w-full">
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Connect PDF
+              </Button>
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -203,8 +244,8 @@ export default function IntegrationSettings() {
                 <LinkIcon className="w-5 h-5" />
               </div>
               <span className="flex-1 text-left">Web Links</span>
-              <span className={`text-sm font-medium mr-4 ${enabledSources['links'] ? 'text-green-600' : 'text-gray-500'}`}>
-                {enabledSources['links'] ? 'Enabled' : 'Disabled'}
+              <span className={`text-sm font-medium mr-4 ${getDataSourceStatus('links') ? 'text-green-600' : 'text-gray-500'}`}>
+                {getDataSourceStatus('links') ? 'Enabled' : 'Disabled'}
               </span>
             </div>
           </AccordionTrigger>
@@ -212,10 +253,20 @@ export default function IntegrationSettings() {
             <div className="flex items-center space-x-2">
               <Switch 
                 id="links-enable" 
-                checked={enabledSources['links']}
-                onCheckedChange={() => handleToggle('links')}
+                checked={getDataSourceStatus('links')}
+                onCheckedChange={() => {
+                  const id = getDataSourceId('links');
+                  if (id) handleToggle(id);
+                }}
               />
-              <label htmlFor="links-enable">Enable</label>
+              <label htmlFor="links-enable">Enable Web Links Integration</label>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm text-gray-500">Connect your web links to access and search through your data.</p>
+              <Button variant="outline" className="w-full">
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Connect Web Links
+              </Button>
             </div>
           </AccordionContent>
         </AccordionItem>
@@ -231,8 +282,8 @@ export default function IntegrationSettings() {
                 className="rounded"
               />
               <span className="flex-1 text-left">Database</span>
-              <span className={`text-sm font-medium mr-4 ${enabledSources['database'] ? 'text-green-600' : 'text-gray-500'}`}>
-                {enabledSources['database'] ? 'Enabled' : 'Disabled'}
+              <span className={`text-sm font-medium mr-4 ${getDataSourceStatus('database') ? 'text-green-600' : 'text-gray-500'}`}>
+                {getDataSourceStatus('database') ? 'Enabled' : 'Disabled'}
               </span>
             </div>
           </AccordionTrigger>
@@ -240,14 +291,24 @@ export default function IntegrationSettings() {
             <div className="flex items-center space-x-2">
               <Switch 
                 id="database-enable" 
-                checked={enabledSources['database']}
-                onCheckedChange={() => handleToggle('database')}
+                checked={getDataSourceStatus('database')}
+                onCheckedChange={() => {
+                  const id = getDataSourceId('database');
+                  if (id) handleToggle(id);
+                }}
               />
-              <label htmlFor="database-enable">Enable</label>
+              <label htmlFor="database-enable">Enable Database Integration</label>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm text-gray-500">Connect your database to access and search through your data.</p>
+              <Button variant="outline" className="w-full">
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Connect Database
+              </Button>
             </div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
     </div>
-  )
+  );
 }
