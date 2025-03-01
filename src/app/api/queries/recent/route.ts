@@ -35,8 +35,10 @@ export async function GET() {
 
     return NextResponse.json(sortedQueries);
   } catch (error) {
+    // Handle any unexpected errors
+    console.error('Error fetching recent queries:', error);
     return NextResponse.json(
-      { message: "Failed to fetch recent queries", error },
+      { message: error instanceof Error ? error.message : "Failed to fetch recent queries" },
       { status: 500 }
     );
   }

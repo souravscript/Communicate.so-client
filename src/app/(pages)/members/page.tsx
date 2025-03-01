@@ -1,7 +1,7 @@
  "use client";
 
 import StatSection from "@/common/components/StatSection";
-import { Stat, Member, Category } from "@/constants/types";
+import { Stat } from "@/constants/types";
 import MemberList from "@/features/Members/MembersList";
 import { Layers, Link, MessageCircle, Users } from "lucide-react";
 
@@ -28,28 +28,28 @@ const dummyStats: Stat[] = [
   },
 ];
 
-const dummyMembers: Member[] = [
-  {
-    id: "1",
-    name: "John Doe",
-    category: "Admin",
-    createdAt: new Date().toLocaleDateString(),
-    lastLogin: new Date().toLocaleDateString()
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    category: "User",
-    createdAt: new Date().toLocaleDateString(),
-    lastLogin: new Date().toLocaleDateString()
-  }
-];
+// const dummyMembers: Member[] = [
+//   {
+//     id: "1",
+//     name: "John Doe",
+//     category: "Admin",
+//     createdAt: new Date().toLocaleDateString(),
+//     lastLogin: new Date().toLocaleDateString()
+//   },
+//   {
+//     id: "2",
+//     name: "Jane Smith",
+//     category: "User",
+//     createdAt: new Date().toLocaleDateString(),
+//     lastLogin: new Date().toLocaleDateString()
+//   }
+// ];
 
-const dummyCategories: Category[] = [
-  { id: "1", name: "Admin" },
-  { id: "2", name: "User" },
-  { id: "3", name: "Moderator" }
-];
+// const dummyCategories: Category[] = [
+//   { id: "1", name: "Admin" },
+//   { id: "2", name: "User" },
+//   { id: "3", name: "Moderator" }
+// ];
 
 export default function Home() {
   return (
@@ -57,7 +57,7 @@ export default function Home() {
     <div className="flex h-full w-full">
       <div className="flex flex-col p-4 gap-2 items-center w-full basis-2/3 max-w-5xl">
         <div className="relative left-10"><StatSection stats={dummyStats} statTitle="Members" /></div>
-        <MemberList members={dummyMembers} categories={dummyCategories} />
+        <MemberList/>
       </div>
     </div>
     </>

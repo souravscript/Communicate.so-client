@@ -40,18 +40,42 @@ export const fetchDataSources = async (dispatch: Dispatch) => {
   }
 };
 
-export const enableDataSource = async (id: string, dispatch: Dispatch) => {
+export const toggleDataSource = async (id: string, dispatch: Dispatch) => {
   try {
     dispatch(setDataSourcesLoading(true));
     dispatch(setDataSourcesError(null));
 
-    console.log('Enabling data source with ID:', id);
+    // First, get the current state of the data source
+    const currentSources = await fetch('/api/data-sources', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include'
+    });
 
+    if (!currentSources.ok) {
+      throw new Error(`Failed to fetch current state: ${currentSources.status}`);
+    }
+
+    const sources = await currentSources.json();
+    const currentSource = Array.isArray(sources) 
+      ? sources.find(source => source.id === id)
+      : null;
+
+    if (!currentSource) {
+      throw new Error('Data source not found');
+    }
+
+    console.log(`${currentSource.isEnabled ? 'Disabling' : 'Enabling'} data source with ID:`, id);
+
+    // Now toggle the state
     const response = await fetch(`/api/data-sources?id=${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify({ isEnabled: !currentSource.isEnabled }),
       credentials: 'include'
     });
 
@@ -76,3 +100,6 @@ export const enableDataSource = async (id: string, dispatch: Dispatch) => {
     throw error;
   }
 };
+
+// For backward compatibility
+export const enableDataSource = (id: string, dispatch: Dispatch) => toggleDataSource(id, dispatch);

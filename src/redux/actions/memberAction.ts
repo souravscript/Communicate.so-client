@@ -20,21 +20,29 @@ export const fetchMembers = async (dispatch: Dispatch) => {
       credentials: 'include',
     });
 
-    const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.message || 'Failed to fetch members');
+      let errorMessage = `Error: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        if (errorData?.message) errorMessage = errorData.message;
+      } catch {}
+      
+      dispatch(setMemberError(errorMessage));
+      dispatch(setMemberLoading(false));
+      return [];
     }
 
-    console.log('Successfully fetched members:', data);
-    dispatch(setMembers(data));
+    const data = await response.json();
+    console.log('Fetched members in member action:', data);
+    const members = Array.isArray(data) ? data : data.members || [];
+    dispatch(setMembers(members));
     dispatch(setMemberLoading(false));
-    return data;
+    return members;
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch members';
     console.error('Error fetching members:', error);
-    dispatch(setMemberError(errorMessage));
+    dispatch(setMemberError(error instanceof Error ? error.message : 'Failed to fetch members'));
     dispatch(setMemberLoading(false));
-    throw error;
+    return [];
   }
 };
 
@@ -43,7 +51,8 @@ export const createMember = async (name: string, category: string, dispatch: Dis
     dispatch(setMemberLoading(true));
     dispatch(setMemberError(null));
 
-    const response = await fetch(`/api/member`, {
+
+    const response = await fetch('/api/member', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -52,12 +61,25 @@ export const createMember = async (name: string, category: string, dispatch: Dis
       body: JSON.stringify({ name, category }),
     });
 
-    const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.message || 'Failed to create member');
+      // For error statuses, try to get error message
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        if (errorData && errorData.message) {
+          errorMessage = errorData.message;
+        }
+      } catch {
+        // Ignore JSON parsing errors
+      }
+      
+      dispatch(setMemberError(errorMessage));
+      dispatch(setMemberLoading(false));
+      return null;
     }
 
-    console.log('Successfully created member:', data);
+    const data = await response.json();
+    console.log('Created member:', data);
     dispatch(addMember(data));
     dispatch(setMemberLoading(false));
     return data;
@@ -66,7 +88,7 @@ export const createMember = async (name: string, category: string, dispatch: Dis
     console.error('Error creating member:', error);
     dispatch(setMemberError(errorMessage));
     dispatch(setMemberLoading(false));
-    throw error;
+    return null;
   }
 };
 
@@ -75,29 +97,48 @@ export const deleteMembers = async (memberIds: string[], dispatch: Dispatch) => 
     dispatch(setMemberLoading(true));
     dispatch(setMemberError(null));
 
-    const response = await fetch(`/api/member`, {
+    // Validate input
+    if (!memberIds.length) {
+      const errorMessage = 'No members selected for deletion';
+      dispatch(setMemberError(errorMessage));
+      dispatch(setMemberLoading(false));
+      return false;
+    }
+
+    const response = await fetch(`/api/member?ids=${memberIds.join(',')}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
       },
       credentials: 'include',
-      body: JSON.stringify({ memberIds }),
     });
 
-    const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.message || 'Failed to delete members');
+      // For error statuses, try to get error message
+      let errorMessage = `HTTP error! status: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        if (errorData && errorData.message) {
+          errorMessage = errorData.message;
+        }
+      } catch {
+        // Ignore JSON parsing errors
+      }
+      
+      dispatch(setMemberError(errorMessage));
+      dispatch(setMemberLoading(false));
+      return false;
     }
 
-    console.log('Successfully deleted members:', memberIds);
+    console.log('Deleted members:', memberIds);
     dispatch(deleteMultipleMembers(memberIds));
     dispatch(setMemberLoading(false));
-    return data;
+    return true;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to delete members';
     console.error('Error deleting members:', error);
     dispatch(setMemberError(errorMessage));
     dispatch(setMemberLoading(false));
-    throw error;
+    return false;
   }
 };

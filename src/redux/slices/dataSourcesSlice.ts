@@ -4,7 +4,7 @@ export interface DataSource {
   id: string;
   name: string;
   type: string;
-  status: string;
+  //status: string;
   isEnabled: boolean;
   createdAt: string;
   updatedAt: string;

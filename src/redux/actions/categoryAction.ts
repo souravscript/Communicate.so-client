@@ -11,34 +11,46 @@ export interface Category {
   categoryName: string;
 }
 
-export const createCategory = async (categoryName: string, dispatch: Dispatch) => {
+export const createCategory = async (dispatch: Dispatch, categoryName: string) => {
   try {
     dispatch(setCategoryLoading(true));
     dispatch(setCategoryError(null));
-    const response = await fetch(`/api/category`, {
+
+    // Validate input
+    if (!categoryName) {
+      dispatch(setCategoryError('Category name is required'));
+      dispatch(setCategoryLoading(false));
+      return null;
+    }
+
+    const response = await fetch('/api/category', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify({ categoryName }),
     });
 
-    const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.message || 'Failed to create category');
+      let errorMessage = `Error: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        if (errorData?.message) errorMessage = errorData.message;
+      } catch {}
+      
+      dispatch(setCategoryError(errorMessage));
+      dispatch(setCategoryLoading(false));
+      return null;
     }
 
-    console.log('Created category:', data);
+    const data = await response.json();
     dispatch(addCategory(data));
     dispatch(setCategoryLoading(false));
     return data;
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to create category';
     console.error('Error creating category:', error);
-    dispatch(setCategoryError(errorMessage));
+    dispatch(setCategoryError(error instanceof Error ? error.message : 'Failed to create category'));
     dispatch(setCategoryLoading(false));
-    throw error;
+    return null;
   }
 };
 
@@ -47,28 +59,35 @@ export const fetchCategories = async (dispatch: Dispatch) => {
     dispatch(setCategoryLoading(true));
     dispatch(setCategoryError(null));
 
-    const response = await fetch(`/api/category`, {
+    const response = await fetch('/api/category', {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
     });
 
-    const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.message || 'Failed to fetch categories');
+      let errorMessage = `Error: ${response.status}`;
+      try {
+        const errorData = await response.json();
+        if (errorData?.message) errorMessage = errorData.message;
+      } catch {}
+      
+      dispatch(setCategoryError(errorMessage));
+      dispatch(setCategoryLoading(false));
+      return [];
     }
 
-    console.log('Fetched categories:', data);
-    dispatch(setCategories(data));
+    const data = await response.json();
+    console.log('Fetched categories in category action:', data);
+    const categories = Array.isArray(data) ? data : data.categories || [];
+
+    dispatch(setCategories(categories));
     dispatch(setCategoryLoading(false));
-    return data;
+    return categories;
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch categories';
     console.error('Error fetching categories:', error);
-    dispatch(setCategoryError(errorMessage));
+    dispatch(setCategoryError(error instanceof Error ? error.message : 'Failed to fetch categories'));
     dispatch(setCategoryLoading(false));
-    throw error;
+    return [];
   }
 };
