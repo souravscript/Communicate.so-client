@@ -25,9 +25,11 @@ const memberSlice = createSlice({
     },
     addMember: (state, action: PayloadAction<Member>) => {
       state.members.push(action.payload);
+      console.log('Added member:', action.payload);
     },
     setMembers: (state, action: PayloadAction<Member[]>) => {
       state.members = action.payload;
+      console.log('Set members:', action.payload);
     },
     deleteMembers: (state, action: PayloadAction<string[]>) => {
       state.members = state.members.filter(

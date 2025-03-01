@@ -32,10 +32,9 @@ export const fetchMembers = async (dispatch: Dispatch) => {
       return [];
     }
 
-    const data = await response.json();
-    console.log('Fetched members in member action:', data);
-    const members = Array.isArray(data) ? data : data.members || [];
-    dispatch(setMembers(members));
+    const members = await response.json();
+    console.log('Fetched members in member action:', members?.data);
+    dispatch(setMembers(members?.data));
     dispatch(setMemberLoading(false));
     return members;
   } catch (error) {

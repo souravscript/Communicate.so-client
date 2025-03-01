@@ -46,8 +46,8 @@ const MemberList: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    console.log('Members:', members);
-  }, [members]);
+    console.log('Members in MemberList:', members);
+  }, [members,dispatch]);
 
   const [newMember, setNewMember] = useState<Omit<Member, 'id'>>({
     name: "",
@@ -295,7 +295,7 @@ const MemberList: React.FC = () => {
             <TableRow>
               <TableHead className="w-12">
                 <Checkbox 
-                  checked={members.length > 0 && selectedMembers.length === members.length}
+                  checked={members?.length > 0 && selectedMembers.length === members.length}
                   onCheckedChange={handleSelectAllChange}
                 />
               </TableHead>
@@ -306,14 +306,14 @@ const MemberList: React.FC = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {members.length === 0 ? (
+            {members?.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-4">
                   No members found
                 </TableCell>
               </TableRow>
             ) : (
-              members.map((member) => (
+              members?.map((member) => (
                 <TableRow key={member.id}>
                   <TableCell>
                     <Checkbox 
