@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export interface DataSource {
   id: string;
   name: string;
-  type: string;
+  //type: string;
   //status: string;
   isEnabled: boolean;
   createdAt: string;

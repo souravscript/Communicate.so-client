@@ -45,6 +45,10 @@ const MemberList: React.FC = () => {
     fetchData();
   }, [dispatch]);
 
+  useEffect(() => {
+    console.log('Members:', members);
+  }, [members]);
+
   const [newMember, setNewMember] = useState<Omit<Member, 'id'>>({
     name: "",
     category: "",

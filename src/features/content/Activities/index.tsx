@@ -77,8 +77,8 @@ const Activities = () => {
   
   // Get enabled data sources
   const enabledSourceIds = dataSources
-    .filter(source => source.isEnabled && source.type)
-    .map(source => source.type.toLowerCase().replace('-', '_'));
+    .filter(source => source.isEnabled)
+    .map(source => source.name.toLowerCase().replace('-', '_'));
 
   const [activeTab, setActiveTab] = useState<string>(enabledSourceIds[0] || 'google_drive');
   const [selectedActivity, setSelectedActivity] = useState<Activity>(

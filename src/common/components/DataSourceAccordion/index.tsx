@@ -68,28 +68,28 @@ export default function DataSourceAccordion() {
             let IconComponent = FileText;
             let iconColor = "text-gray-500";
             
-            if (dataSource?.type) {
-              const type = dataSource.type.toLowerCase();
+            if (dataSource?.name) {
+              const name = dataSource.name.toLowerCase();
               
-              if (type.includes('google') || type.includes('drive')) {
+              if (name.includes('google') || name.includes('drive')) {
                 IconComponent = File;
                 iconColor = "text-blue-500";
-              } else if (type.includes('slack')) {
+              } else if (name.includes('slack')) {
                 IconComponent = MessageSquare;
                 iconColor = "text-yellow-500";
-              } else if (type.includes('salesforce')) {
+              } else if (name.includes('salesforce')) {
                 IconComponent = Database;
                 iconColor = "text-blue-700";
-              } else if (type.includes('tally')) {
+              } else if (name.includes('tally')) {
                 IconComponent = Table;
                 iconColor = "text-green-500";
-              } else if (type.includes('database')) {
+              } else if (name.includes('database')) {
                 IconComponent = Database;
                 iconColor = "text-purple-500";
-              } else if (type.includes('pdf')) {
+              } else if (name.includes('pdf')) {
                 IconComponent = FileText;
                 iconColor = "text-red-500";
-              } else if (type.includes('link')) {
+              } else if (name.includes('link')) {
                 IconComponent = LinkIcon;
                 iconColor = "text-blue-500";
               }

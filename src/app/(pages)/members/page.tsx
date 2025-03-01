@@ -28,28 +28,7 @@ const dummyStats: Stat[] = [
   },
 ];
 
-// const dummyMembers: Member[] = [
-//   {
-//     id: "1",
-//     name: "John Doe",
-//     category: "Admin",
-//     createdAt: new Date().toLocaleDateString(),
-//     lastLogin: new Date().toLocaleDateString()
-//   },
-//   {
-//     id: "2",
-//     name: "Jane Smith",
-//     category: "User",
-//     createdAt: new Date().toLocaleDateString(),
-//     lastLogin: new Date().toLocaleDateString()
-//   }
-// ];
 
-// const dummyCategories: Category[] = [
-//   { id: "1", name: "Admin" },
-//   { id: "2", name: "User" },
-//   { id: "3", name: "Moderator" }
-// ];
 
 export default function Home() {
   return (
