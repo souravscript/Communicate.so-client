@@ -33,12 +33,12 @@ export const fetchMembers = async (dispatch: Dispatch) => {
     }
 
     const members = await response.json();
-    console.log('Fetched members in member action:', members?.data);
+    //console.log('Fetched members in member action:', members?.data);
     dispatch(setMembers(members?.data));
     dispatch(setMemberLoading(false));
     return members;
   } catch (error) {
-    console.error('Error fetching members:', error);
+    //console.error('Error fetching members:', error);
     dispatch(setMemberError(error instanceof Error ? error.message : 'Failed to fetch members'));
     dispatch(setMemberLoading(false));
     return [];
@@ -78,13 +78,13 @@ export const createMember = async (name: string, category: string, dispatch: Dis
     }
 
     const data = await response.json();
-    console.log('Created member:', data);
+    //console.log('Created member:', data);
     dispatch(addMember(data));
     dispatch(setMemberLoading(false));
     return data;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to create member';
-    console.error('Error creating member:', error);
+    //console.error('Error creating member:', error);
     dispatch(setMemberError(errorMessage));
     dispatch(setMemberLoading(false));
     return null;
@@ -129,13 +129,13 @@ export const deleteMembers = async (memberIds: string[], dispatch: Dispatch) => 
       return false;
     }
 
-    console.log('Deleted members:', memberIds);
+    //console.log('Deleted members:', memberIds);
     dispatch(deleteMultipleMembers(memberIds));
     dispatch(setMemberLoading(false));
     return true;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to delete members';
-    console.error('Error deleting members:', error);
+    //console.error('Error deleting members:', error);
     dispatch(setMemberError(errorMessage));
     dispatch(setMemberLoading(false));
     return false;

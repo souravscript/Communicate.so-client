@@ -1,41 +1,32 @@
-import { NextResponse } from "next/server";
-import { Query } from "@/redux/slices/querySlice";
+import { headers } from 'next/headers';
+import { NextResponse } from 'next/server';
 
-// Mock data for recent queries
-const recentQueries: Query[] = [
-  {
-    id: "1",
-    text: "How to implement Redux in Next.js?",
-    timestamp: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
-    userId: "user1",
-    category: "Development"
-  },
-  {
-    id: "2",
-    text: "Best practices for TypeScript with React",
-    timestamp: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
-    userId: "user2",
-    category: "Development"
-  },
-  {
-    id: "3",
-    text: "How to handle async actions in Redux?",
-    timestamp: new Date(Date.now() - 10800000).toISOString(), // 3 hours ago
-    userId: "user1",
-    category: "Development"
-  },
-];
+const API_BASE_URL ='http://localhost:8082';
 
 export async function GET() {
+  const headersList = headers();
+  const cookie = headersList.get('cookie');
   try {
-    // Sort queries by timestamp, most recent first
-    const sortedQueries = [...recentQueries].sort(
-      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    );
+    const response = await fetch(`${API_BASE_URL}/api/v1/queries/recent`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Cookie': cookie || '',
+      },
+      //credentials: 'include',
+    });
 
-    return NextResponse.json(sortedQueries);
+    if (!response.ok) {
+      const error = await response.json();
+      return NextResponse.json(
+        { message: error.message || 'Failed to fetch recent queries' },
+        { status: response.status }
+      );
+    }
+
+    const queries = await response.json();
+    return NextResponse.json(queries);
   } catch (error) {
-    // Handle any unexpected errors
     console.error('Error fetching recent queries:', error);
     return NextResponse.json(
       { message: error instanceof Error ? error.message : "Failed to fetch recent queries" },

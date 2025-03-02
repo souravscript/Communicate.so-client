@@ -78,7 +78,7 @@ export const fetchCategories = async (dispatch: Dispatch) => {
     }
 
     const data = await response.json();
-    console.log('Fetched categories in category action:', data);
+    //console.log('Fetched categories in category action:', data);
     const categories = Array.isArray(data) ? data : data.categories || [];
 
     dispatch(setCategories(categories));

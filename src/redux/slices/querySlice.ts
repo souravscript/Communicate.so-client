@@ -1,11 +1,21 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+export interface Category {
+  id: string;
+  categoryName: string;
+}
+
 export interface Query {
   id: string;
-  text: string;
-  timestamp: string;
-  userId: string;
-  category: string;
+  content: string;
+  response: string;
+  platform: string | null;
+  metadata: string;
+  createdBy: string;
+  categoryId: string;
+  createdAt: string;
+  updatedAt: string;
+  category: Category;
 }
 
 interface QueryState {

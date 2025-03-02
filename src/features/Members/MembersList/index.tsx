@@ -23,12 +23,13 @@ import {
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Member } from "@/constants/types";
-import { RefreshCcw, Trash2 } from "lucide-react";
+import { RefreshCcw, Trash2, Loader2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { createCategory, fetchCategories } from "@/redux/actions/categoryAction";
 import { fetchMembers, deleteMembers, createMember } from "@/redux/actions/memberAction";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { toast } from "sonner";
 
 const MemberList: React.FC = () => {
   const dispatch = useDispatch();
@@ -62,7 +63,7 @@ const MemberList: React.FC = () => {
 
   const handleAddMember = async () => {
     if (!newMember.name || !newMember.category) {
-      alert("Name and Category cannot be empty.");
+      toast.error("Name and Category cannot be empty.");
       return;
     }
   
@@ -74,9 +75,10 @@ const MemberList: React.FC = () => {
         createdAt: new Date().toISOString(),
         lastLogin: new Date().toISOString(),
       });
+      toast.success("Member added successfully!");
     } catch (error) {
       console.error('Failed to add member:', error);
-      alert('Failed to add member. Please try again.');
+      toast.error('Failed to add member. Please try again.');
     }
   };
 
@@ -239,40 +241,49 @@ const MemberList: React.FC = () => {
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    Name
-                  </Label>
-                  <Input
-                    id="name"
-                    value={newMember.name}
-                    onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="category" className="text-right">
-                    Category
-                  </Label>
-                  <Select 
-                    value={newMember.category} 
-                    onValueChange={(value) => setNewMember({ ...newMember, category: value })}
+                <div className="flex gap-4 mb-6">
+                  <div className="flex-1">
+                    <Input
+                      placeholder="Enter member name"
+                      value={newMember.name}
+                      onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
+                      disabled={membersLoading}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <Select
+                      value={newMember.category}
+                      onValueChange={(value) => setNewMember({ ...newMember, category: value })}
+                      disabled={membersLoading}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category.id} value={category.categoryName}>
+                            {category.categoryName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button 
+                    onClick={handleAddMember} 
+                    disabled={membersLoading}
                   >
-                    <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories && categories.map((category) => (
-                        <SelectItem key={category.id} value={category.categoryName}>
-                          {category.categoryName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    {membersLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Adding...
+                      </>
+                    ) : (
+                      'Add Member'
+                    )}
+                  </Button>
                 </div>
               </div>
               <DialogFooter>
-                <Button className="w-full bg-primaryColor text-white" onClick={handleAddMember}>Add Member</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>

@@ -1,40 +1,56 @@
 import { fetchRecentQueries } from '@/redux/actions/queryAction';
 import React, { useEffect } from 'react';
 import { useAppDispatch } from '@/redux/hooks';
-
-const recentQueries = [
-  { category: 'Sales', query: 'What is CAC of the product Platinum Debit Card?' },
-  { category: 'Sales', query: 'Can you help me explain the information about this....' },
-  { category: 'Technology', query: "What's the repository link for Alpha project?" },
-  { category: 'Business', query: 'What was the last quarter performance in terms of...' },
-  { category: 'Sales', query: 'Draft a sales pitch for the Alpha product in 300 words' },
-];
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 
 const RecentQueriesTable = () => {
   const dispatch = useAppDispatch();
+  const { queries, loading } = useSelector((state: RootState) => state.queries);
   
   useEffect(() => {
     dispatch(fetchRecentQueries());
   }, [dispatch]);
+
+  const minRows = 5;
+  const emptyRows = Math.max(0, minRows - (queries?.length || 0));
   
+  if (loading) {
+    return (
+      <div className="max-w-[38rem] w-[36.2rem] relative mx-auto py-4 px-2 text-center">
+        Loading recent queries...
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-[40rem] w-[36rem] mx-auto py-4 px-2 ">
+    <div className="max-w-[38rem] w-[36.2rem] relative mx-auto py-4 px-2">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Recent Queries</h2>
-        <a href="#" className="text-blue-500 hover:underline">See More</a>
+        <button className="text-blue-500 hover:underline">See More</button>
       </div>
-      <table className="w-full border border-[#E2E8F0] rounded-2xl">
-        <thead>
+      <table className="w-full border border-[#E2E8F0] mb-8 shadow-md rounded-lg">
+        <thead className="mb-4">
           <tr>
-            <th className="text-left py-2 px-6 border-b bg-white opacity-55 font-sans">Category</th>
-            <th className="text-left py-2 px-6 border-b bg-white opacity-55 font-sans">Query</th>
+            <th className="text-left px-2 py-2 border-b opacity-55 bg-white" style={{ width: '100px' }}>Category</th>
+            <th className="text-left px-2 py-2 border-b opacity-55 bg-white">Query</th>
           </tr>
         </thead>
         <tbody>
-          {recentQueries.map((item, index) => (
-            <tr key={index} className="even:bg-gray-100">
-              <td className="py-2 px-6 border-b ">{item.category}</td>
-              <td className="py-2 px-6 border-b overflow-hidden whitespace-nowrap text-ellipsis max-w-[720px]">{item.query}</td>
+          {queries.map((query) => (
+            <tr key={query.id} className="h-[2rem] even:bg-gray-100">
+              <td className="px-2 py-1 border-b whitespace-nowrap">
+                {query.category?.categoryName}
+              </td>
+              <td className="px-2 py-1 border-b overflow-hidden whitespace-nowrap text-ellipsis">
+                {query.content}
+              </td>
+            </tr>
+          ))}
+          {Array.from({ length: emptyRows }).map((_, index) => (
+            <tr key={`empty-${index}`} className="even:bg-gray-100 h-[2.2rem]">
+              <td className="px-2 py-1 border-b">&nbsp;</td>
+              <td className="px-2 py-1 border-b">&nbsp;</td>
             </tr>
           ))}
         </tbody>

@@ -2,7 +2,8 @@ import { Dispatch } from "@reduxjs/toolkit";
 import { 
   setQueryLoading, 
   setQueryError, 
-  setQueries 
+  setQueries,
+  Query 
 } from "../slices/querySlice";
 
 export const fetchRecentQueries = () => async (dispatch: Dispatch) => {
@@ -20,17 +21,22 @@ export const fetchRecentQueries = () => async (dispatch: Dispatch) => {
 
     if (!response.ok) {
       const error = await response.json();
+      console.log('Error fetching recent queries:', error);
       throw new Error(error.message || 'Failed to fetch recent queries');
     }
 
-    const queries = await response.json();
+    const data = await response.json();
+    console.log('Fetched recent queries in query action:', data);
+    const queries: Query[] = data.queries || [];
+    console.log('Fetched recent queries in query action with query Interface:', queries);
     dispatch(setQueries(queries));
-    dispatch(setQueryLoading(false));
     return queries;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to fetch recent queries';
+    console.error('Error fetching recent queries:', errorMessage);
     dispatch(setQueryError(errorMessage));
+    return [];
+  } finally {
     dispatch(setQueryLoading(false));
-    throw error;
   }
 };
